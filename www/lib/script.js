@@ -13,17 +13,32 @@ window.onload = function (){
 
 ///Primeiro botão
   buscar.addEventListener('click',function(){
-    fetch(`https://viacep.com.br/ws/${ cep.value }/json/`,opcoes)
-      .then(response =>{
-        response.json()
-        .then(data =>{
-          document.querySelector("#estado").value = data['uf'];
-          document.querySelector("#cidade").value = data['localidade'];
-          document.querySelector("#bairro").value = data['bairro'];
-          document.querySelector("#rua").value = data['logradouro'];
-        })
-      })
-  });
+      function verifica(buttonIndex){
+            if (buttonIndex==1){
+                fetch(`https://viacep.com.br/ws/${ cep.value }/json/`,opcoes)
+                    .then(response =>{
+                        response.json()
+                        .then(data =>{
+                        document.querySelector("#estado").value = data['uf'];
+                        document.querySelector("#cidade").value = data['localidade'];
+                        document.querySelector("#bairro").value = data['bairro'];
+                        document.querySelector("#rua").value = data['logradouro'];
+                        })
+                    })
+
+            }else{
+                navigator.vibrate(300)
+                navigator.notification.alert("Saindo do Programa");
+            }
+
+            }
+            navigator.notification.confirm("Alerta", 
+                verifica,
+                "Tem certeza disso?",
+                    ['SIM','NÃO'], 
+            );
+       });
+ 
 
 
 //segundo botao
@@ -73,6 +88,7 @@ function mapa(lat,long){
 }
 
   document.querySelector("#local").addEventListener("click", function(){
+      navigator.vibrate(100)
 
     var onSuccess = function(position) {
         mapa(position.coords.latitude, position.coords.longitude);
@@ -87,7 +103,6 @@ function mapa(lat,long){
 
     navigator.geolocation.getCurrentPosition(onSuccess, onError);
   });
-
 
   
 
