@@ -1,4 +1,4 @@
-
+// This is a JavaScript file
 
 window.onload = function (){
   const buscar = document.querySelector("#buscar");
@@ -9,103 +9,25 @@ window.onload = function (){
     mode:'cors',
     cache: 'default'
   }
-/////////////////////////////////////////////////////
 
 
-  function checkConnection() {
-    let networkState = navigator.connection.type;
-
-    let states = {};
-
-    states[Connection.NONE] = 0;
-
-    if(states[networkState] == 0){
-      return false;
-    }else{
-      return true;
-    }
-}
-
-// checkConnection();
-
-function onConfirm(buttonIndex) {
-  if(buttonIndex == 1){
-    navigator.app.exitApp();
-  }else{
-    return false;
-  }
-}
-
-//////////////////////////////////////////////////
-
-  document.querySelector("#local").addEventListener("click", function(){
-    if(checkConnection()){
-
-      function mapa(lat,long){
-        L.mapquest.key = 'WttG3ae5icu36vH6g1qUIV18qm2KLJ3G';
-
-        var map = L.mapquest.map('map', {
-          center: [lat, long],
-          layers: L.mapquest.tileLayer('map'),
-          zoom: 12
-        });
-        map.addControl(L.mapquest.control());
-}
-
-}else{    
-        navigator.notification.confirm(
-          'Você está sem conexão! Deseja Sair?', // message
-          onConfirm,            // callback to invoke with index of button pressed
-          'Erro de conexão',           // title
-          ['SIM','NÃO']     // buttonLabels
-        );
-      }
-
-    var onSuccess = function(position) {
-        mapa(position.coords.latitude, position.coords.longitude);
-    };
-
-    // onError Callback receives a PositionError object
-    //
-    function onError(error) {
-        alert('code: '    + error.code    + '\n' +
-              'message: ' + error.message + '\n');
-    }
-
-    navigator.geolocation.getCurrentPosition(onSuccess, onError);
+///Primeiro botão
+  buscar.addEventListener('click',function(){
+    fetch(`https://viacep.com.br/ws/${ cep.value }/json/`,opcoes)
+      .then(response =>{
+        response.json()
+        .then(data =>{
+          document.querySelector("#estado").value = data['uf'];
+          document.querySelector("#cidade").value = data['localidade'];
+          document.querySelector("#bairro").value = data['bairro'];
+          document.querySelector("#rua").value = data['logradouro'];
+        })
+      })
   });
 
-/////////////////////////////////////////////////////
 
-
-document.querySelector("#localdgt").addEventListener("click", function(){
-
-     L.mapquest.geocoding().geocode({
-        
-          street: 'document.querySelector("#rua").value',
-          city: 'document.querySelector("#cidade").value',
-          state: 'document.querySelector("#estado").value',
-          postalCode: 'document.querySelector("#cep").value'
-
-        }, createMap);
-
-
-
-        function createMap(error, response) {
-          var location = response.results[0].locations[0];
-          var latLng = location.displayLatLng;
-          var map = L.mapquest.map('map', {
-            center: latLng,
-            layers: L.mapquest.tileLayer('map'),
-            zoom: 18
-          });
-        }
-});
- 
-  /////////////////////////////////////////////////////
-
+//segundo botao
   buscarQR.addEventListener('click',function(){
-      if(checkConnection()){
     cordova.plugins.barcodeScanner.scan(
       function (result) {
            fetch(`https://viacep.com.br/ws/${ result.text }/json/`,opcoes)
@@ -136,13 +58,49 @@ document.querySelector("#localdgt").addEventListener("click", function(){
           disableSuccessBeep: true // iOS and Android
       }
    );
-   }else{    
-        navigator.notification.confirm(
-          'Você está sem conexão! Deseja Sair?', // message
-          onConfirm,            // callback to invoke with index of button pressed
-          'Erro de conexão',           // title
-          ['SIM','NÃO']     // buttonLabels
-        );
-      }
   });
+
+  ///loc atual
+function mapa(lat,long){
+   L.mapquest.key = 'WttG3ae5icu36vH6g1qUIV18qm2KLJ3G';
+
+        var map = L.mapquest.map('map', {
+          center: [lat, long],
+          layers: L.mapquest.tileLayer('map'),
+          zoom: 12
+        });
+        map.addControl(L.mapquest.control());
 }
+
+  document.querySelector("#local").addEventListener("click", function(){
+
+    var onSuccess = function(position) {
+        mapa(position.coords.latitude, position.coords.longitude);
+    };
+
+    // onError Callback receives a PositionError object
+    //
+    function onError(error) {
+        alert('code: '    + error.code    + '\n' +
+              'message: ' + error.message + '\n');
+    }
+
+    navigator.geolocation.getCurrentPosition(onSuccess, onError);
+  });
+
+
+  
+
+  //loc digitada
+
+
+
+
+
+
+
+}
+
+
+
+
